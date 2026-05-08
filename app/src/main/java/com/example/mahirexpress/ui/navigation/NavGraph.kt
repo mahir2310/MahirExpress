@@ -9,6 +9,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.mahirexpress.ui.auth.LoginScreen
 import com.example.mahirexpress.ui.auth.RegisterScreen
+import com.example.mahirexpress.ui.customer.HomeScreen
 import com.example.mahirexpress.util.PreferenceManager
 
 sealed class Screen(val route: String) {
@@ -17,6 +18,10 @@ sealed class Screen(val route: String) {
     object CustomerHome : Screen("customer_home")
     object AdminHome : Screen("admin_home")
     object ManagerHome : Screen("manager_home")
+    object RouteList : Screen("route_list/{source}/{destination}/{date}") {
+        fun createRoute(source: String, destination: String, date: String) = 
+            "route_list/$source/$destination/$date"
+    }
 }
 
 @Composable
@@ -26,7 +31,6 @@ fun MahirNavGraph(
     val context = LocalContext.current
     val preferenceManager = PreferenceManager(context)
     
-    // Determine start destination based on login status
     val startDestination = if (preferenceManager.isLoggedIn()) {
         val role = preferenceManager.getUserData()["role"]
         when (role) {
@@ -73,15 +77,32 @@ fun MahirNavGraph(
             )
         }
 
-        // Placeholders for Home Dashboards (to be implemented in Step 8 & 15)
         composable(Screen.CustomerHome.route) {
-            Text("Customer Dashboard - Coming in Step 8")
+            HomeScreen(
+                onSearchClick = { source, dest, date ->
+                    navController.navigate(Screen.RouteList.createRoute(source, dest, date))
+                },
+                onLogout = {
+                    navController.navigate(Screen.Login.route) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+            )
         }
+
+        composable(Screen.RouteList.route) { backStackEntry ->
+            val source = backStackEntry.arguments?.getString("source") ?: ""
+            val dest = backStackEntry.arguments?.getString("destination") ?: ""
+            val date = backStackEntry.arguments?.getString("date") ?: ""
+            // Placeholder for now, will implement in Step 9
+            Text("Listing routes from $source to $dest on $date")
+        }
+
         composable(Screen.AdminHome.route) {
-            Text("Admin Dashboard - Coming in Step 15")
+            Text("Admin Dashboard - Implementation in Step 15")
         }
         composable(Screen.ManagerHome.route) {
-            Text("Manager Dashboard - Coming in Step 15")
+            Text("Manager Dashboard - Implementation in Step 15")
         }
     }
 }

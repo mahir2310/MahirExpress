@@ -20,7 +20,11 @@ private val DarkColorScheme = darkColorScheme(
     secondary = AmberSecondaryDark,
     tertiary = SeatAvailable,
     background = Color(0xFF121212),
-    surface = Color(0xFF1E1E1E)
+    surface = Color(0xFF1E1E1E),
+    onPrimary = Color.Black,
+    onSecondary = Color.Black,
+    onBackground = Color.White,
+    onSurface = Color.White
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -30,14 +34,14 @@ private val LightColorScheme = lightColorScheme(
     background = BackgroundLight,
     surface = SurfaceLight,
     onPrimary = Color.White,
-    onSecondary = Color.Black
+    onSecondary = Color.Black,
+    onBackground = Color(0xFF1C1B1F),
+    onSurface = Color(0xFF1C1B1F)
 )
 
 @Composable
 fun MahirExpressTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    // We'll set it to false to maintain our MahirExpress branding
     dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
@@ -46,7 +50,6 @@ fun MahirExpressTheme(
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
-
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }

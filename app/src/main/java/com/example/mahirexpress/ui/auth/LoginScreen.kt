@@ -50,12 +50,20 @@ fun LoginScreen(
             modifier = Modifier.padding(bottom = 32.dp)
         )
 
+        val textFieldColors = OutlinedTextFieldDefaults.colors(
+            focusedTextColor = MaterialTheme.colorScheme.onSurface,
+            unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+            focusedLabelColor = MaterialTheme.colorScheme.primary,
+            unfocusedLabelColor = MaterialTheme.colorScheme.secondary
+        )
+
         OutlinedTextField(
             value = viewModel.email,
             onValueChange = { viewModel.email = it },
             label = { Text("Email") },
             modifier = Modifier.fillMaxWidth(),
-            singleLine = true
+            singleLine = true,
+            colors = textFieldColors
         )
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -65,7 +73,8 @@ fun LoginScreen(
             label = { Text("Password") },
             modifier = Modifier.fillMaxWidth(),
             visualTransformation = PasswordVisualTransformation(),
-            singleLine = true
+            singleLine = true,
+            colors = textFieldColors
         )
 
         Spacer(modifier = Modifier.height(32.dp))
@@ -91,7 +100,7 @@ fun LoginScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         TextButton(onClick = onNavigateToRegister) {
-            Text("Don't have an account? Register")
+            Text("Don't have an account? Register", color = MaterialTheme.colorScheme.primary)
         }
     }
 }

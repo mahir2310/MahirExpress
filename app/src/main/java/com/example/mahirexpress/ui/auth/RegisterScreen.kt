@@ -49,12 +49,20 @@ fun RegisterScreen(
             modifier = Modifier.padding(bottom = 32.dp)
         )
 
+        val textFieldColors = OutlinedTextFieldDefaults.colors(
+            focusedTextColor = MaterialTheme.colorScheme.onSurface,
+            unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+            focusedLabelColor = MaterialTheme.colorScheme.primary,
+            unfocusedLabelColor = MaterialTheme.colorScheme.secondary
+        )
+
         OutlinedTextField(
             value = viewModel.name,
             onValueChange = { viewModel.name = it },
             label = { Text("Full Name") },
             modifier = Modifier.fillMaxWidth(),
-            singleLine = true
+            singleLine = true,
+            colors = textFieldColors
         )
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -63,7 +71,8 @@ fun RegisterScreen(
             onValueChange = { viewModel.email = it },
             label = { Text("Email") },
             modifier = Modifier.fillMaxWidth(),
-            singleLine = true
+            singleLine = true,
+            colors = textFieldColors
         )
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -72,7 +81,8 @@ fun RegisterScreen(
             onValueChange = { viewModel.phone = it },
             label = { Text("Phone Number") },
             modifier = Modifier.fillMaxWidth(),
-            singleLine = true
+            singleLine = true,
+            colors = textFieldColors
         )
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -82,7 +92,8 @@ fun RegisterScreen(
             label = { Text("Password") },
             modifier = Modifier.fillMaxWidth(),
             visualTransformation = PasswordVisualTransformation(),
-            singleLine = true
+            singleLine = true,
+            colors = textFieldColors
         )
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -92,15 +103,16 @@ fun RegisterScreen(
             label = { Text("Confirm Password") },
             modifier = Modifier.fillMaxWidth(),
             visualTransformation = PasswordVisualTransformation(),
-            singleLine = true
+            singleLine = true,
+            colors = textFieldColors
         )
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Role Selection
         Text(
             text = "Select Your Role",
             fontWeight = FontWeight.Medium,
-            modifier = Modifier.align(Alignment.Start)
+            modifier = Modifier.align(Alignment.Start),
+            color = MaterialTheme.colorScheme.onSurface
         )
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -114,7 +126,7 @@ fun RegisterScreen(
                         selected = viewModel.role == role,
                         onClick = { viewModel.role = role }
                     )
-                    Text(text = role, fontSize = 14.sp)
+                    Text(text = role, fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurface)
                 }
             }
         }
