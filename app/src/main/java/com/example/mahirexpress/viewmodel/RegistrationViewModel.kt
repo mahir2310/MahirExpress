@@ -24,38 +24,43 @@ class RegistrationViewModel : ViewModel() {
     private val database = FirebaseDatabase.getInstance().getReference("users")
 
     fun registerUser() {
-        if (password != confirmPassword) {
-            errorMessage = "Passwords do not match"
+        if (name.isBlank() || email.isBlank() || phone.isBlank() || password.isBlank()) {
+            errorMessage = "Please fill all fields"
             return
         }
 
-        if (name.isBlank() || email.isBlank() || phone.isBlank() || password.isBlank()) {
-            errorMessage = "Please fill all fields"
+        if (password != confirmPassword) {
+            errorMessage = "Passwords do not match"
             return
         }
 
         isLoading = true
         errorMessage = null
 
-        auth.createUserWithEmailAndPassword(email, password)
+        auth.createUserWithEmailAndPassword(email.trim(), password)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     val userId = auth.currentUser?.uid ?: ""
-                    val user = User(userId, name, email, phone, role)
+                    val user = User(userId, name.trim(), email.trim(), phone.trim(), role)
                     
+                    // Add a listener to ensure we stop loading even if database write fails/times out
                     database.child(userId).setValue(user)
-                        .addOnCompleteListener { dbTask ->
+                        .addOnSuccessListener {
                             isLoading = false
-                            if (dbTask.isSuccessful) {
-                                isSuccess = true
-                            } else {
-                                errorMessage = dbTask.exception?.message
-                            }
+                            isSuccess = true
+                        }
+                        .addOnFailureListener { e ->
+                            isLoading = false
+                            errorMessage = "Account created but profile failed: ${e.message}"
                         }
                 } else {
                     isLoading = false
-                    errorMessage = task.exception?.message
+                    errorMessage = task.exception?.message ?: "Registration failed"
                 }
+            }
+            .addOnFailureListener { e ->
+                isLoading = false
+                errorMessage = e.message
             }
     }
 }

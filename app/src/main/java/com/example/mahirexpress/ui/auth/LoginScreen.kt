@@ -46,7 +46,7 @@ fun LoginScreen(
         Text(
             text = "Login to your account",
             fontSize = 16.sp,
-            color = MaterialTheme.colorScheme.secondary,
+            color = MaterialTheme.colorScheme.onSurfaceVariant, // Dark grey instead of Yellow
             modifier = Modifier.padding(bottom = 32.dp)
         )
 
@@ -54,7 +54,8 @@ fun LoginScreen(
             focusedTextColor = MaterialTheme.colorScheme.onSurface,
             unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
             focusedLabelColor = MaterialTheme.colorScheme.primary,
-            unfocusedLabelColor = MaterialTheme.colorScheme.secondary
+            unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant, // Dark grey label
+            cursorColor = MaterialTheme.colorScheme.primary
         )
 
         OutlinedTextField(

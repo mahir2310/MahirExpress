@@ -45,7 +45,7 @@ fun RegisterScreen(
         Text(
             text = "Join MahirExpress Today",
             fontSize = 16.sp,
-            color = MaterialTheme.colorScheme.secondary,
+            color = MaterialTheme.colorScheme.onSurfaceVariant, // Dark grey instead of Yellow
             modifier = Modifier.padding(bottom = 32.dp)
         )
 
@@ -53,7 +53,8 @@ fun RegisterScreen(
             focusedTextColor = MaterialTheme.colorScheme.onSurface,
             unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
             focusedLabelColor = MaterialTheme.colorScheme.primary,
-            unfocusedLabelColor = MaterialTheme.colorScheme.secondary
+            unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant, // Dark grey label
+            cursorColor = MaterialTheme.colorScheme.primary
         )
 
         OutlinedTextField(
@@ -152,7 +153,7 @@ fun RegisterScreen(
         }
 
         TextButton(onClick = onNavigateToLogin) {
-            Text("Already have an account? Login")
+            Text("Already have an account? Login", color = MaterialTheme.colorScheme.primary)
         }
     }
 }
