@@ -1,10 +1,12 @@
 package com.example.mahirexpress.ui.auth
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -33,6 +35,7 @@ fun LoginScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(Color(0xFF121212)) // Dark Background
             .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
@@ -41,21 +44,23 @@ fun LoginScreen(
             text = "MahirExpress",
             fontSize = 32.sp,
             fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.primary
+            color = Color.White
         )
         Text(
             text = "Login to your account",
             fontSize = 16.sp,
-            color = MaterialTheme.colorScheme.onSurfaceVariant, // Dark grey instead of Yellow
+            color = Color.LightGray,
             modifier = Modifier.padding(bottom = 32.dp)
         )
 
         val textFieldColors = OutlinedTextFieldDefaults.colors(
-            focusedTextColor = MaterialTheme.colorScheme.onSurface,
-            unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+            focusedTextColor = Color.White,
+            unfocusedTextColor = Color.White,
             focusedLabelColor = MaterialTheme.colorScheme.primary,
-            unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant, // Dark grey label
-            cursorColor = MaterialTheme.colorScheme.primary
+            unfocusedLabelColor = Color.LightGray,
+            focusedBorderColor = MaterialTheme.colorScheme.primary,
+            unfocusedBorderColor = Color.Gray,
+            cursorColor = Color.White
         )
 
         OutlinedTextField(
@@ -81,7 +86,7 @@ fun LoginScreen(
         Spacer(modifier = Modifier.height(32.dp))
 
         if (viewModel.isLoading) {
-            CircularProgressIndicator()
+            CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
         } else {
             Button(
                 onClick = { viewModel.loginUser(preferenceManager) },

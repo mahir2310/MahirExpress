@@ -43,24 +43,20 @@ class RegistrationViewModel : ViewModel() {
                     val userId = auth.currentUser?.uid ?: ""
                     val user = User(userId, name.trim(), email.trim(), phone.trim(), role)
                     
-                    // Add a listener to ensure we stop loading even if database write fails/times out
+                    // Use onCompleteListener to ensure loading stops regardless of result
                     database.child(userId).setValue(user)
-                        .addOnSuccessListener {
+                        .addOnCompleteListener { dbTask ->
                             isLoading = false
-                            isSuccess = true
-                        }
-                        .addOnFailureListener { e ->
-                            isLoading = false
-                            errorMessage = "Account created but profile failed: ${e.message}"
+                            if (dbTask.isSuccessful) {
+                                isSuccess = true
+                            } else {
+                                errorMessage = "User created but profile failed. Check if Realtime Database is enabled in Firebase Console."
+                            }
                         }
                 } else {
                     isLoading = false
                     errorMessage = task.exception?.message ?: "Registration failed"
                 }
-            }
-            .addOnFailureListener { e ->
-                isLoading = false
-                errorMessage = e.message
             }
     }
 }

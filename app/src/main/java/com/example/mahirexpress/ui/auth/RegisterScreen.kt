@@ -1,5 +1,6 @@
 package com.example.mahirexpress.ui.auth
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -7,6 +8,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
@@ -31,6 +33,7 @@ fun RegisterScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(Color(0xFF121212)) // Dark Background
             .padding(24.dp)
             .verticalScroll(scrollState),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -40,21 +43,23 @@ fun RegisterScreen(
             text = "Create Account",
             fontSize = 28.sp,
             fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.primary
+            color = Color.White
         )
         Text(
             text = "Join MahirExpress Today",
             fontSize = 16.sp,
-            color = MaterialTheme.colorScheme.onSurfaceVariant, // Dark grey instead of Yellow
+            color = Color.LightGray,
             modifier = Modifier.padding(bottom = 32.dp)
         )
 
         val textFieldColors = OutlinedTextFieldDefaults.colors(
-            focusedTextColor = MaterialTheme.colorScheme.onSurface,
-            unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+            focusedTextColor = Color.White,
+            unfocusedTextColor = Color.White,
             focusedLabelColor = MaterialTheme.colorScheme.primary,
-            unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant, // Dark grey label
-            cursorColor = MaterialTheme.colorScheme.primary
+            unfocusedLabelColor = Color.LightGray,
+            focusedBorderColor = MaterialTheme.colorScheme.primary,
+            unfocusedBorderColor = Color.Gray,
+            cursorColor = Color.White
         )
 
         OutlinedTextField(
@@ -113,7 +118,7 @@ fun RegisterScreen(
             text = "Select Your Role",
             fontWeight = FontWeight.Medium,
             modifier = Modifier.align(Alignment.Start),
-            color = MaterialTheme.colorScheme.onSurface
+            color = Color.White
         )
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -125,9 +130,13 @@ fun RegisterScreen(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     RadioButton(
                         selected = viewModel.role == role,
-                        onClick = { viewModel.role = role }
+                        onClick = { viewModel.role = role },
+                        colors = RadioButtonDefaults.colors(
+                            selectedColor = MaterialTheme.colorScheme.primary,
+                            unselectedColor = Color.Gray
+                        )
                     )
-                    Text(text = role, fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurface)
+                    Text(text = role, fontSize = 14.sp, color = Color.White)
                 }
             }
         }
@@ -135,7 +144,7 @@ fun RegisterScreen(
         Spacer(modifier = Modifier.height(32.dp))
 
         if (viewModel.isLoading) {
-            CircularProgressIndicator()
+            CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
         } else {
             Button(
                 onClick = { viewModel.registerUser() },
