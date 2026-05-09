@@ -1,4 +1,4 @@
-package com.example.mahirexpress.ui.admin
+package com.example.mahirexpress.ui.manager
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -6,8 +6,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
-import androidx.compose.material.icons.filled.Assessment
-import androidx.compose.material.icons.filled.Payments
+import androidx.compose.material.icons.filled.DirectionsBus
+import androidx.compose.material.icons.filled.Route
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -18,23 +18,24 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.mahirexpress.ui.customer.BookingItem
-import com.example.mahirexpress.viewmodel.AdminViewModel
+import com.example.mahirexpress.ui.admin.StatCard
+import com.example.mahirexpress.ui.customer.BusRouteItem
+import com.example.mahirexpress.viewmodel.ManagerViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AdminDashboardScreen(
+fun ManagerDashboardScreen(
     onLogout: () -> Unit,
-    viewModel: AdminViewModel = viewModel()
+    viewModel: ManagerViewModel = viewModel()
 ) {
     LaunchedEffect(Unit) {
-        viewModel.fetchAllBookings()
+        viewModel.fetchData()
     }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Admin Dashboard") },
+                title = { Text("Manager Dashboard") },
                 actions = {
                     IconButton(onClick = onLogout) {
                         Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = "Logout", tint = Color.White)
@@ -60,15 +61,15 @@ fun AdminDashboardScreen(
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 StatCard(
-                    title = "Total Revenue",
-                    value = "$${viewModel.totalRevenue}",
-                    icon = Icons.Default.Payments,
+                    title = "Total Buses",
+                    value = "${viewModel.buses.size}",
+                    icon = Icons.Default.DirectionsBus,
                     modifier = Modifier.weight(1f)
                 )
                 StatCard(
-                    title = "Bookings",
-                    value = "${viewModel.allBookings.size}",
-                    icon = Icons.Default.Assessment,
+                    title = "Active Routes",
+                    value = "${viewModel.routes.size}",
+                    icon = Icons.Default.Route,
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -76,7 +77,7 @@ fun AdminDashboardScreen(
             Spacer(modifier = Modifier.height(24.dp))
 
             Text(
-                text = "Recent System Bookings",
+                text = "Operational Routes",
                 color = Color.White,
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
@@ -90,26 +91,11 @@ fun AdminDashboardScreen(
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    items(viewModel.allBookings) { booking ->
-                        BookingItem(booking = booking)
+                    items(viewModel.routes) { route ->
+                        BusRouteItem(route = route, onClick = { /* Future: Edit Route */ })
                     }
                 }
             }
-        }
-    }
-}
-
-@Composable
-fun StatCard(title: String, value: String, icon: androidx.compose.ui.graphics.vector.ImageVector, modifier: Modifier = Modifier) {
-    Card(
-        modifier = modifier,
-        colors = CardDefaults.cardColors(containerColor = Color(0xFF1E1E1E))
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(text = title, color = Color.LightGray, fontSize = 12.sp)
-            Text(text = value, color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold)
         }
     }
 }

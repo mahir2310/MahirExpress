@@ -1,0 +1,57 @@
+{
+  "buses": {
+    "bus_001": {
+      "busId": "bus_001",
+      "busName": "Mahir Platinum AC",
+      "registrationNumber": "DH-METRO-KA-1234",
+      "totalSeats": 40,
+      "manager": "manager_user_id_1",
+      "seatLayout": "2x2",
+      "type": "AC"
+    },
+    "bus_002": {
+      "busId": "bus_002",
+      "busName": "Mahir Express Non-AC",
+      "registrationNumber": "DH-METRO-GA-5678",
+      "totalSeats": 40,
+      "manager": "manager_user_id_1",
+      "seatLayout": "2x2",
+      "type": "Non-AC"
+    }
+  },
+  "routes": {
+    "route_001": {
+      "routeId": "route_001",
+      "source": "Dhaka",
+      "destination": "Chittagong",
+      "departureTime": "08:00 AM",
+      "arrivalTime": "02:00 PM",
+      "distance": "250 km",
+      "fare": 1200.0,
+      "availableSeats": 40,
+      "busId": "bus_001"
+    },
+    "route_002": {
+      "routeId": "route_002",
+      "source": "Dhaka",
+      "destination": "Sylhet",
+      "departureTime": "10:00 AM",
+      "arrivalTime": "04:00 PM",
+      "distance": "240 km",
+      "fare": 800.0,
+      "availableSeats": 40,
+      "busId": "bus_002"
+    },
+    "route_003": {
+      "routeId": "route_003",
+      "source": "Dhaka",
+      "destination": "Cox's Bazar",
+      "departureTime": "11:00 PM",
+      "arrivalTime": "07:30 AM",
+      "distance": "400 km",
+      "fare": 1500.0,
+      "availableSeats": 35,
+      "busId": "bus_001"
+    }
+  }
+}
