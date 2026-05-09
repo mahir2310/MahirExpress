@@ -9,5 +9,6 @@ data class Route(
     val distance: String = "",
     val fare: Double = 0.0,
     val availableSeats: Int = 0,
-    val busId: String = ""
+    val busId: String = "",
+    val date: String = "" // Added date field for search compatibility
 )

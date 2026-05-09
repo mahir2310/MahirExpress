@@ -15,16 +15,42 @@ class RouteViewModel : ViewModel() {
     private val database = FirebaseDatabase.getInstance().getReference("routes")
     
     val routes = mutableStateListOf<Route>()
+    val allSources = mutableStateListOf<String>()
+    val allDestinations = mutableStateListOf<String>()
+    
     var isLoading by mutableStateOf(false)
     var errorMessage by mutableStateOf<String?>(null)
 
-    fun searchRoutes(source: String, destination: String) {
+    init {
+        fetchLocations()
+    }
+
+    private fun fetchLocations() {
+        database.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val sources = mutableSetOf<String>()
+                val destinations = mutableSetOf<String>()
+                for (child in snapshot.children) {
+                    val route = child.getValue(Route::class.java)
+                    route?.let {
+                        sources.add(it.source)
+                        destinations.add(it.destination)
+                    }
+                }
+                allSources.clear()
+                allSources.addAll(sources.sorted())
+                allDestinations.clear()
+                allDestinations.addAll(destinations.sorted())
+            }
+            override fun onCancelled(error: DatabaseError) {}
+        })
+    }
+
+    fun searchRoutes(source: String, destination: String, date: String) {
         isLoading = true
         errorMessage = null
         routes.clear()
 
-        // In a real app, we'd use a query, but for our lab project, 
-        // we fetch all and filter locally for simplicity and reliability.
         database.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 routes.clear()
@@ -32,13 +58,14 @@ class RouteViewModel : ViewModel() {
                     val route = child.getValue(Route::class.java)
                     if (route != null && 
                         route.source.equals(source, ignoreCase = true) && 
-                        route.destination.equals(destination, ignoreCase = true)) {
+                        route.destination.equals(destination, ignoreCase = true) &&
+                        route.date == date) {
                         routes.add(route)
                     }
                 }
                 isLoading = false
                 if (routes.isEmpty()) {
-                    errorMessage = "No buses found for this route."
+                    errorMessage = "No buses found for this route on $date."
                 }
             }
 

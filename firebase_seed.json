@@ -29,7 +29,8 @@
       "distance": "250 km",
       "fare": 1200.0,
       "availableSeats": 40,
-      "busId": "bus_001"
+      "busId": "bus_001",
+      "date": "10/05/2026"
     },
     "route_002": {
       "routeId": "route_002",
@@ -40,7 +41,8 @@
       "distance": "240 km",
       "fare": 800.0,
       "availableSeats": 40,
-      "busId": "bus_002"
+      "busId": "bus_002",
+      "date": "10/05/2026"
     },
     "route_003": {
       "routeId": "route_003",
@@ -51,7 +53,36 @@
       "distance": "400 km",
       "fare": 1500.0,
       "availableSeats": 35,
-      "busId": "bus_001"
+      "busId": "bus_001",
+      "date": "10/05/2026"
+    }
+  },
+  "users": {
+    "RxpEyNXV6pY6ufPJQ7IC2hikHLn2": {
+      "createdAt": 1778166095006,
+      "email": "customer@gmail.com",
+      "name": "customer1",
+      "phone": "0192929283",
+      "profileImage": "",
+      "role": "Customer",
+      "userId": "RxpEyNXV6pY6ufPJQ7IC2hikHLn2"
+    },
+    "fQ6yzHHR9NTwYIRbay4v8IeLeTa2": {
+      "createdAt": 1778166138369,
+      "email": "manager@gmail.com",
+      "name": "Manager1",
+      "phone": "0182822828",
+      "profileImage": "",
+      "role": "Manager"
+    },
+    "xdRoQD08JaQtJ4IjdKvoX2wFGEb2": {
+      "createdAt": 1778166118462,
+      "email": "admin@gmail.com",
+      "name": "Admin1",
+      "phone": "0182828282",
+      "profileImage": "",
+      "role": "Admin",
+      "userId": "xdRoQD08JaQtJ4IjdKvoX2wFGEb2"
     }
   }
 }
