@@ -25,7 +25,7 @@ class PaymentActivity : AppCompatActivity() {
         database = FirebaseDatabase.getInstance()
 
         val routeId = intent.getStringExtra("routeId") ?: ""
-        val busId = intent.getStringExtra("busId") ?: "" // Added busId
+        val busId = intent.getStringExtra("busId") ?: ""
         val source = intent.getStringExtra("source") ?: ""
         val destination = intent.getStringExtra("destination") ?: ""
         val busName = intent.getStringExtra("busName") ?: ""
@@ -92,8 +92,7 @@ class PaymentActivity : AppCompatActivity() {
         bookingRef.setValue(booking)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    // Update seats using busId as the identifier
-                    updateSeatStatus(busId, seats, bookingId)
+                    updateSeatStatusAndCount(busId, routeId, seats, bookingId)
                 } else {
                     if (!isFinishing) {
                         binding.progressBar.visibility = View.GONE
@@ -104,7 +103,7 @@ class PaymentActivity : AppCompatActivity() {
             }
     }
 
-    private fun updateSeatStatus(busId: String, seats: List<String>, bookingId: String) {
+    private fun updateSeatStatusAndCount(busId: String, routeId: String, seats: List<String>, bookingId: String) {
         val seatUpdates = mutableMapOf<String, Any>()
         seats.forEach { seat ->
             seatUpdates["$seat/status"] = "booked"
@@ -112,21 +111,28 @@ class PaymentActivity : AppCompatActivity() {
             seatUpdates["$seat/bookedBy"] = auth.currentUser?.uid ?: ""
         }
 
-        // Must update under "seats" -> "busId"
         database.getReference("seats").child(busId).updateChildren(seatUpdates)
-            .addOnCompleteListener { task ->
-                if (!isFinishing) {
-                    binding.progressBar.visibility = View.GONE
-                    if (task.isSuccessful) {
-                        Toast.makeText(this, "Payment Successful & Ticket Booked!", Toast.LENGTH_LONG).show()
-                        val intent = Intent(this, BookingConfirmationActivity::class.java)
-                        startActivity(intent)
-                        finish()
-                    } else {
-                        Toast.makeText(this, "Failed to update seats", Toast.LENGTH_SHORT).show()
-                        binding.btnPayNow.isEnabled = true
+        
+        // Update total available seats on the route
+        val routeRef = database.getReference("routes").child(routeId)
+        routeRef.child("availableSeats").addListenerForSingleValueEvent(object : com.google.firebase.database.ValueEventListener {
+            override fun onDataChange(snapshot: com.google.firebase.database.DataSnapshot) {
+                val currentSeats = snapshot.getValue(Int::class.java) ?: 0
+                val newCount = currentSeats - seats.size
+                routeRef.child("availableSeats").setValue(newCount)
+                    .addOnCompleteListener {
+                        if (!isFinishing) {
+                            binding.progressBar.visibility = View.GONE
+                            Toast.makeText(this@PaymentActivity, "Payment Successful & Ticket Booked!", Toast.LENGTH_LONG).show()
+                            val intent = Intent(this@PaymentActivity, BookingConfirmationActivity::class.java)
+                            startActivity(intent)
+                            finish()
+                        }
                     }
-                }
             }
+            override fun onCancelled(error: com.google.firebase.database.DatabaseError) {
+                // Proceed anyway
+            }
+        })
     }
 }
