@@ -21,7 +21,6 @@ class BookingsFragment : Fragment() {
     private lateinit var database: DatabaseReference
     private lateinit var auth: FirebaseAuth
     private lateinit var adapter: BookingAdapter
-    private val bookingList = mutableListOf<Booking>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -37,7 +36,8 @@ class BookingsFragment : Fragment() {
         auth = FirebaseAuth.getInstance()
         database = FirebaseDatabase.getInstance().getReference("bookings")
 
-        adapter = BookingAdapter(bookingList) { booking ->
+        // Initialize with empty list
+        adapter = BookingAdapter(emptyList()) { booking ->
             val intent = Intent(requireContext(), TicketActivity::class.java).apply {
                 putExtra("route", "${booking.source} to ${booking.destination}")
                 putExtra("date", booking.journeyDate)
@@ -59,23 +59,25 @@ class BookingsFragment : Fragment() {
         val userId = auth.currentUser?.uid ?: return
         
         database.orderByChild("userId").equalTo(userId)
-            .addValueEventListener(object : ValueEventListener {
+            .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    bookingList.clear()
+                    if (_binding == null) return
+                    
+                    val newList = mutableListOf<Booking>()
                     for (bookingSnapshot in snapshot.children) {
                         val booking = bookingSnapshot.getValue(Booking::class.java)
                         if (booking != null) {
-                            bookingList.add(booking)
+                            newList.add(booking)
                         }
                     }
                     
-                    if (bookingList.isEmpty()) {
+                    if (newList.isEmpty()) {
                         binding.tvEmpty.visibility = View.VISIBLE
                         binding.rvBookings.visibility = View.GONE
                     } else {
                         binding.tvEmpty.visibility = View.GONE
                         binding.rvBookings.visibility = View.VISIBLE
-                        adapter.updateData(bookingList)
+                        adapter.updateData(newList)
                     }
                 }
 
