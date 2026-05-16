@@ -37,8 +37,8 @@ class SeatSelectionActivity : AppCompatActivity() {
         setSupportActionBar(binding.toolbar)
         binding.toolbar.setNavigationOnClickListener { finish() }
 
-        // Corrected database reference to point to "seats" node under the specific routeId
-        database = FirebaseDatabase.getInstance().getReference("seats").child(routeId ?: "default")
+        // Pointing to "seats" node specifically for this busId/route
+        database = FirebaseDatabase.getInstance().getReference("seats").child(busId ?: "default")
 
         fetchBookedSeats()
 
@@ -60,10 +60,10 @@ class SeatSelectionActivity : AppCompatActivity() {
     }
 
     private fun fetchBookedSeats() {
-        // Changed to addListenerForSingleValueEvent to ensure immediate loading
-        database.addListenerForSingleValueEvent(object : ValueEventListener {
+        database.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 bookedSeats.clear()
+                // Assuming seats structure: "seats" -> "busId" -> "S1" -> {status: "booked"}
                 for (seatSnapshot in snapshot.children) {
                     val status = seatSnapshot.child("status").getValue(String::class.java)
                     if (status == "booked") {
@@ -74,28 +74,25 @@ class SeatSelectionActivity : AppCompatActivity() {
             }
 
             override fun onCancelled(error: DatabaseError) {
-                // If the path doesn't exist yet, we still want to show the empty grid
                 setupSeatGrid()
-                Toast.makeText(this@SeatSelectionActivity, "Error: ${error.message}", Toast.LENGTH_SHORT).show()
             }
         })
     }
 
     private fun setupSeatGrid() {
         binding.seatGrid.removeAllViews()
-        val totalSeats = 40
+        val totalSeats = 32 // Standard bus size
 
         for (i in 1..totalSeats) {
             val seatName = "S$i"
             val textView = TextView(this)
             textView.text = seatName
-            textView.textSize = 16f
+            textView.textSize = 14f
             textView.gravity = Gravity.CENTER
             
             val params = GridLayout.LayoutParams()
-            params.width = 0
+            params.width = 120
             params.height = 120
-            params.columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f)
             params.setMargins(8, 8, 8, 8)
             textView.layoutParams = params
             
@@ -109,9 +106,11 @@ class SeatSelectionActivity : AppCompatActivity() {
                     if (selectedSeats.contains(seatName)) {
                         selectedSeats.remove(seatName)
                         textView.setBackgroundResource(android.R.drawable.btn_default)
+                        textView.setTextColor(Color.BLACK)
                     } else {
                         selectedSeats.add(seatName)
                         textView.setBackgroundColor(Color.GREEN)
+                        textView.setTextColor(Color.WHITE)
                     }
                     updateSummary()
                 }

@@ -86,7 +86,7 @@ class HomeFragment : Fragment() {
     private fun fetchRoutes() {
         binding.progressBar.visibility = View.VISIBLE
         
-        database.addListenerForSingleValueEvent(object : ValueEventListener {
+        database.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (_binding == null) return
                 routeList.clear()
