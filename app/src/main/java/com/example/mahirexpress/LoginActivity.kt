@@ -81,13 +81,10 @@ class LoginActivity : AppCompatActivity() {
                     apply()
                 }
 
-                if (role == "admin") {
-                    startActivity(Intent(this, AdminDashboardActivity::class.java))
-                } else if (role == "manager") {
-                    // Manager Dashboard can be same as Admin or separate
-                    startActivity(Intent(this, AdminDashboardActivity::class.java))
-                } else {
-                    startActivity(Intent(this, MainActivity::class.java))
+                when (role) {
+                    "admin" -> startActivity(Intent(this, AdminDashboardActivity::class.java))
+                    "manager" -> startActivity(Intent(this, ManagerDashboardActivity::class.java))
+                    else -> startActivity(Intent(this, MainActivity::class.java))
                 }
                 finishAffinity()
             }
