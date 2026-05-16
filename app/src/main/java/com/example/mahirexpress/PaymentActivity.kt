@@ -48,6 +48,10 @@ class PaymentActivity : AppCompatActivity() {
 
         binding.btnPayNow.setOnClickListener {
             val paymentDetail = binding.etPaymentDetail.text.toString().trim()
+            if (binding.rgPaymentMethod.checkedRadioButtonId == -1) {
+                Toast.makeText(this, "Please select a payment method", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
             if (paymentDetail.isEmpty()) {
                 binding.etPaymentDetail.error = "Detail required"
                 return@setOnClickListener
@@ -92,7 +96,8 @@ class PaymentActivity : AppCompatActivity() {
         bookingRef.setValue(booking)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    updateSeatStatusAndCount(busId, routeId, seats, bookingId)
+                    // FIX: Must update the seats node using routeId to ensure correct seat tracking for specific trips
+                    updateSeatStatusAndCount(routeId, routeId, seats, bookingId)
                 } else {
                     if (!isFinishing) {
                         binding.progressBar.visibility = View.GONE
@@ -103,7 +108,7 @@ class PaymentActivity : AppCompatActivity() {
             }
     }
 
-    private fun updateSeatStatusAndCount(busId: String, routeId: String, seats: List<String>, bookingId: String) {
+    private fun updateSeatStatusAndCount(busIdOrRouteId: String, routeId: String, seats: List<String>, bookingId: String) {
         val seatUpdates = mutableMapOf<String, Any>()
         seats.forEach { seat ->
             seatUpdates["$seat/status"] = "booked"
@@ -111,9 +116,8 @@ class PaymentActivity : AppCompatActivity() {
             seatUpdates["$seat/bookedBy"] = auth.currentUser?.uid ?: ""
         }
 
-        database.getReference("seats").child(busId).updateChildren(seatUpdates)
+        database.getReference("seats").child(busIdOrRouteId).updateChildren(seatUpdates)
         
-        // Update total available seats on the route
         val routeRef = database.getReference("routes").child(routeId)
         routeRef.child("availableSeats").addListenerForSingleValueEvent(object : com.google.firebase.database.ValueEventListener {
             override fun onDataChange(snapshot: com.google.firebase.database.DataSnapshot) {
@@ -131,7 +135,6 @@ class PaymentActivity : AppCompatActivity() {
                     }
             }
             override fun onCancelled(error: com.google.firebase.database.DatabaseError) {
-                // Proceed anyway
             }
         })
     }

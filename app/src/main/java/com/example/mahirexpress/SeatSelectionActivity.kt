@@ -37,8 +37,9 @@ class SeatSelectionActivity : AppCompatActivity() {
         setSupportActionBar(binding.toolbar)
         binding.toolbar.setNavigationOnClickListener { finish() }
 
-        // Pointing to "seats" node specifically for this busId
-        database = FirebaseDatabase.getInstance().getReference("seats").child(busId ?: "default")
+        // FIX: The seat data must be uniquely keyed by the routeId, NOT busId.
+        // If it's keyed by busId, all routes using that bus will share the same bookings.
+        database = FirebaseDatabase.getInstance().getReference("seats").child(routeId ?: "default")
 
         fetchBookedSeats()
 
@@ -98,11 +99,18 @@ class SeatSelectionActivity : AppCompatActivity() {
             textView.layoutParams = params
             
             if (bookedSeats.contains(seatName)) {
-                textView.setBackgroundColor(Color.LTGRAY)
+                textView.setBackgroundColor(Color.GRAY)
                 textView.setTextColor(Color.WHITE)
-                textView.isEnabled = false
+                textView.isEnabled = false 
             } else {
-                textView.setBackgroundResource(android.R.drawable.btn_default)
+                if (selectedSeats.contains(seatName)) {
+                    textView.setBackgroundColor(Color.GREEN)
+                    textView.setTextColor(Color.WHITE)
+                } else {
+                    textView.setBackgroundResource(android.R.drawable.btn_default)
+                    textView.setTextColor(Color.BLACK)
+                }
+
                 textView.setOnClickListener {
                     if (selectedSeats.contains(seatName)) {
                         selectedSeats.remove(seatName)
