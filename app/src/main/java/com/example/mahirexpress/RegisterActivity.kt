@@ -40,11 +40,8 @@ class RegisterActivity : AppCompatActivity() {
         val password = binding.etPassword.text.toString().trim()
         val confirmPassword = binding.etConfirmPassword.text.toString().trim()
 
-        val role = when (binding.rgRole.checkedRadioButtonId) {
-            R.id.rbAdmin -> "admin"
-            R.id.rbManager -> "manager"
-            else -> "customer"
-        }
+        // Default all new registrations to "Customer" role
+        val role = "Customer"
 
         if (fullName.isEmpty() || email.isEmpty() || phone.isEmpty() || password.isEmpty()) {
             Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show()
@@ -70,12 +67,7 @@ class RegisterActivity : AppCompatActivity() {
                                 saveUserToSharedPrefs(user)
                                 Toast.makeText(this, "Registration successful", Toast.LENGTH_SHORT).show()
                                 
-                                val intent = if (role == "admin" || role == "manager") {
-                                    Intent(this, AdminDashboardActivity::class.java)
-                                } else {
-                                    Intent(this, MainActivity::class.java)
-                                }
-                                startActivity(intent)
+                                startActivity(Intent(this, MainActivity::class.java))
                                 finishAffinity()
                             } else {
                                 Toast.makeText(this, "Database error: ${dbTask.exception?.message}", Toast.LENGTH_SHORT).show()
