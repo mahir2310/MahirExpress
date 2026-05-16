@@ -1,7 +1,6 @@
 package com.example.mahirexpress
 
 import android.os.Bundle
-import android.webkit.WebViewClient
 import androidx.appcompat.app.AppCompatActivity
 import com.example.mahirexpress.databinding.ActivityTermsBinding
 
@@ -17,11 +16,8 @@ class TermsActivity : AppCompatActivity() {
         setSupportActionBar(binding.toolbar)
         binding.toolbar.setNavigationOnClickListener { finish() }
 
-        binding.webView.webViewClient = WebViewClient()
-        // Loading a placeholder or a real URL
-        binding.webView.loadUrl("https://www.google.com") // Replace with actual terms URL
-        
-        // Enable JS if needed
-        binding.webView.settings.javaScriptEnabled = true
+        // Using loadData for static string content
+        val content = getString(R.string.terms_content)
+        binding.webView.loadData("<html><body><p style='font-size:16px;'>$content</p></body></html>", "text/html", "UTF-8")
     }
 }

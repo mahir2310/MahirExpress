@@ -5,7 +5,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
 import com.example.mahirexpress.databinding.ActivitySettingsBinding
 
 class SettingsActivity : AppCompatActivity() {
@@ -24,19 +23,9 @@ class SettingsActivity : AppCompatActivity() {
 
         // Load preferences
         binding.switchNotifications.isChecked = sharedPref.getBoolean("notifications", true)
-        binding.switchDarkMode.isChecked = sharedPref.getBoolean("darkMode", false)
 
         binding.switchNotifications.setOnCheckedChangeListener { _, isChecked ->
             sharedPref.edit().putBoolean("notifications", isChecked).apply()
-        }
-
-        binding.switchDarkMode.setOnCheckedChangeListener { _, isChecked ->
-            sharedPref.edit().putBoolean("darkMode", isChecked).apply()
-            if (isChecked) {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-            } else {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-            }
         }
 
         // Language Spinner
@@ -52,7 +41,12 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         binding.tvAbout.setOnClickListener {
-            startActivity(Intent(this, HelpActivity::class.java))
+            // Using a simple Alert Dialog for About instead of HelpActivity
+            androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("About MahirExpress")
+                .setMessage(getString(R.string.about_content))
+                .setPositiveButton("OK", null)
+                .show()
         }
     }
 }

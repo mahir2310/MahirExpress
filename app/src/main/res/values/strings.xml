@@ -27,4 +27,6 @@
     <string name="passenger_details">Passenger Details</string>
     <string name="proceed_to_summary">Proceed to Summary</string>
     <string name="select_seats">Select Seats</string>
+    <string name="terms_content">Welcome to MahirExpress. By using our service, you agree to these terms: 1. You must be 18+ to book. 2. All bookings are non-refundable. 3. Please arrive 15 minutes before departure. We value your privacy and data security.</string>
+    <string name="about_content">MahirExpress is a modern bus ticketing solution. This project was developed by Sajid Hasan Mahir. GitHub: github.com/mahir2310</string>
 </resources>
