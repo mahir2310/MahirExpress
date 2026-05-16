@@ -21,19 +21,6 @@ class AdminDashboardActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         binding.toolbar.setNavigationOnClickListener { finish() }
 
-        // Route Management
-        binding.cardAddRoute.setOnClickListener {
-            startActivity(Intent(this, AddRouteActivity::class.java))
-        }
-        binding.cardManageRoutes.setOnClickListener {
-            startActivity(Intent(this, ManageRoutesActivity::class.java))
-        }
-
-        // Bus Management
-        binding.cardManageBuses.setOnClickListener {
-            startActivity(Intent(this, ManageBusesActivity::class.java))
-        }
-
         // Booking Reports (All system bookings)
         binding.cardReports.setOnClickListener {
             startActivity(Intent(this, AdminBookingsActivity::class.java))
