@@ -37,7 +37,7 @@ class SeatSelectionActivity : AppCompatActivity() {
         setSupportActionBar(binding.toolbar)
         binding.toolbar.setNavigationOnClickListener { finish() }
 
-        // Pointing to "seats" node specifically for this busId/route
+        // Pointing to "seats" node specifically for this busId
         database = FirebaseDatabase.getInstance().getReference("seats").child(busId ?: "default")
 
         fetchBookedSeats()
@@ -45,6 +45,8 @@ class SeatSelectionActivity : AppCompatActivity() {
         binding.btnContinue.setOnClickListener {
             if (selectedSeats.isEmpty()) {
                 Toast.makeText(this, "Please select at least one seat", Toast.LENGTH_SHORT).show()
+            } else if (selectedSeats.size > 5) {
+                Toast.makeText(this, "You can book maximum 5 seats", Toast.LENGTH_SHORT).show()
             } else {
                 val intent = Intent(this, PassengerRegistrationActivity::class.java)
                 intent.putExtra("routeId", routeId)
@@ -63,7 +65,6 @@ class SeatSelectionActivity : AppCompatActivity() {
         database.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 bookedSeats.clear()
-                // Assuming seats structure: "seats" -> "busId" -> "S1" -> {status: "booked"}
                 for (seatSnapshot in snapshot.children) {
                     val status = seatSnapshot.child("status").getValue(String::class.java)
                     if (status == "booked") {
@@ -81,19 +82,19 @@ class SeatSelectionActivity : AppCompatActivity() {
 
     private fun setupSeatGrid() {
         binding.seatGrid.removeAllViews()
-        val totalSeats = 32 // Standard bus size
+        val totalSeats = 32
 
         for (i in 1..totalSeats) {
             val seatName = "S$i"
             val textView = TextView(this)
             textView.text = seatName
-            textView.textSize = 14f
+            textView.textSize = 18f
             textView.gravity = Gravity.CENTER
             
             val params = GridLayout.LayoutParams()
-            params.width = 120
-            params.height = 120
-            params.setMargins(8, 8, 8, 8)
+            params.width = 150
+            params.height = 150
+            params.setMargins(12, 12, 12, 12)
             textView.layoutParams = params
             
             if (bookedSeats.contains(seatName)) {
@@ -108,9 +109,13 @@ class SeatSelectionActivity : AppCompatActivity() {
                         textView.setBackgroundResource(android.R.drawable.btn_default)
                         textView.setTextColor(Color.BLACK)
                     } else {
-                        selectedSeats.add(seatName)
-                        textView.setBackgroundColor(Color.GREEN)
-                        textView.setTextColor(Color.WHITE)
+                        if (selectedSeats.size >= 5) {
+                            Toast.makeText(this, "Maximum 5 seats allowed", Toast.LENGTH_SHORT).show()
+                        } else {
+                            selectedSeats.add(seatName)
+                            textView.setBackgroundColor(Color.GREEN)
+                            textView.setTextColor(Color.WHITE)
+                        }
                     }
                     updateSummary()
                 }

@@ -25,6 +25,7 @@ class PaymentActivity : AppCompatActivity() {
         database = FirebaseDatabase.getInstance()
 
         val routeId = intent.getStringExtra("routeId") ?: ""
+        val busId = intent.getStringExtra("busId") ?: "" // Added busId
         val source = intent.getStringExtra("source") ?: ""
         val destination = intent.getStringExtra("destination") ?: ""
         val busName = intent.getStringExtra("busName") ?: ""
@@ -52,12 +53,13 @@ class PaymentActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
             
-            processBooking(routeId, source, destination, busName, selectedSeats, passengerDetails, totalAmount, journeyDate)
+            processBooking(routeId, busId, source, destination, busName, selectedSeats, passengerDetails, totalAmount, journeyDate)
         }
     }
 
     private fun processBooking(
         routeId: String,
+        busId: String,
         source: String,
         destination: String,
         busName: String,
@@ -90,7 +92,8 @@ class PaymentActivity : AppCompatActivity() {
         bookingRef.setValue(booking)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    updateSeatStatus(routeId, seats, bookingId)
+                    // Update seats using busId as the identifier
+                    updateSeatStatus(busId, seats, bookingId)
                 } else {
                     if (!isFinishing) {
                         binding.progressBar.visibility = View.GONE
@@ -101,7 +104,7 @@ class PaymentActivity : AppCompatActivity() {
             }
     }
 
-    private fun updateSeatStatus(routeId: String, seats: List<String>, bookingId: String) {
+    private fun updateSeatStatus(busId: String, seats: List<String>, bookingId: String) {
         val seatUpdates = mutableMapOf<String, Any>()
         seats.forEach { seat ->
             seatUpdates["$seat/status"] = "booked"
@@ -109,7 +112,8 @@ class PaymentActivity : AppCompatActivity() {
             seatUpdates["$seat/bookedBy"] = auth.currentUser?.uid ?: ""
         }
 
-        database.getReference("seats").child(routeId).updateChildren(seatUpdates)
+        // Must update under "seats" -> "busId"
+        database.getReference("seats").child(busId).updateChildren(seatUpdates)
             .addOnCompleteListener { task ->
                 if (!isFinishing) {
                     binding.progressBar.visibility = View.GONE
