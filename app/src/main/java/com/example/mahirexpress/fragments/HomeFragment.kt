@@ -37,7 +37,7 @@ class HomeFragment : Fragment() {
 
         database = FirebaseDatabase.getInstance().getReference("routes")
 
-        adapter = RouteAdapter(routeList) { route ->
+        adapter = RouteAdapter(emptyList()) { route ->
             val intent = Intent(requireContext(), RouteDetailActivity::class.java)
             intent.putExtra("routeId", route.routeId)
             intent.putExtra("fare", route.fare)
@@ -89,17 +89,23 @@ class HomeFragment : Fragment() {
         database.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (_binding == null) return
-                routeList.clear()
+                
+                val newList = mutableListOf<Route>()
                 for (routeSnapshot in snapshot.children) {
                     val route = routeSnapshot.getValue(Route::class.java)
                     if (route != null) {
-                        routeList.add(route)
+                        newList.add(route)
                     }
                 }
+                
+                routeList.clear()
+                routeList.addAll(newList)
+                
                 binding.progressBar.visibility = View.GONE
                 binding.swipeRefresh.isRefreshing = false
-                // Automatically display all routes on load
-                adapter.updateData(routeList)
+                
+                // Ensure UI updates on the main thread
+                adapter.updateData(newList)
             }
 
             override fun onCancelled(error: DatabaseError) {
