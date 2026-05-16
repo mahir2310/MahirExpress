@@ -49,7 +49,7 @@ class AdminBookingListFragment : Fragment() {
 
         database = FirebaseDatabase.getInstance().getReference("bookings")
 
-        adapter = BookingAdapter(bookingList) { booking ->
+        adapter = BookingAdapter(emptyList()) { booking ->
             val intent = Intent(requireContext(), TicketActivity::class.java).apply {
                 putExtra("route", "${booking.source} to ${booking.destination}")
                 putExtra("date", booking.journeyDate)
@@ -74,24 +74,28 @@ class AdminBookingListFragment : Fragment() {
             database
         }
 
-        query.addValueEventListener(object : ValueEventListener {
+        query.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (_binding == null) return
-                bookingList.clear()
+                
+                val newList = mutableListOf<Booking>()
                 for (bookingSnapshot in snapshot.children) {
                     val booking = bookingSnapshot.getValue(Booking::class.java)
                     if (booking != null) {
-                        bookingList.add(booking)
+                        newList.add(booking)
                     }
                 }
                 
-                if (bookingList.isEmpty()) {
+                bookingList.clear()
+                bookingList.addAll(newList)
+                
+                if (newList.isEmpty()) {
                     binding.tvEmpty.visibility = View.VISIBLE
                     binding.rvBookings.visibility = View.GONE
                 } else {
                     binding.tvEmpty.visibility = View.GONE
                     binding.rvBookings.visibility = View.VISIBLE
-                    adapter.updateData(bookingList)
+                    adapter.updateData(newList)
                 }
             }
 

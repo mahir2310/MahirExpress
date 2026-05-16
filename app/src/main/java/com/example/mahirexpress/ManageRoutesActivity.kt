@@ -33,13 +33,13 @@ class ManageRoutesActivity : AppCompatActivity() {
 
         database = FirebaseDatabase.getInstance().getReference("routes")
 
-        adapter = RouteAdapter(routeList) { route ->
-            // Logic for clicking a route item (e.g., edit)
+        // Initialize with empty list to force rendering on update
+        adapter = RouteAdapter(emptyList()) { route ->
+            // Logic for clicking a route item
         }
         binding.rvRoutes.layoutManager = LinearLayoutManager(this)
         binding.rvRoutes.adapter = adapter
 
-        // Lab 5 & 14: Swipe to delete
         val swipeHandler = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
             override fun onMove(rv: RecyclerView, vh: RecyclerView.ViewHolder, t: RecyclerView.ViewHolder): Boolean = false
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
@@ -91,26 +91,31 @@ class ManageRoutesActivity : AppCompatActivity() {
         if (!binding.swipeRefresh.isRefreshing) {
             binding.progressBar.visibility = View.VISIBLE
         }
-        database.addValueEventListener(object : ValueEventListener {
+        // Use single value event to fetch and render once
+        database.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (this@ManageRoutesActivity.isFinishing) return
-                routeList.clear()
+                
+                val newList = mutableListOf<Route>()
                 for (routeSnapshot in snapshot.children) {
                     val route = routeSnapshot.getValue(Route::class.java)
                     if (route != null) {
-                        routeList.add(route)
+                        newList.add(route)
                     }
                 }
+                
+                routeList.clear()
+                routeList.addAll(newList)
+                
                 binding.progressBar.visibility = View.GONE
                 binding.swipeRefresh.isRefreshing = false
-                adapter.updateData(routeList)
+                adapter.updateData(newList)
             }
 
             override fun onCancelled(error: DatabaseError) {
                 if (this@ManageRoutesActivity.isFinishing) return
                 binding.progressBar.visibility = View.GONE
                 binding.swipeRefresh.isRefreshing = false
-                Toast.makeText(this@ManageRoutesActivity, "Error: ${error.message}", Toast.LENGTH_SHORT).show()
             }
         })
     }

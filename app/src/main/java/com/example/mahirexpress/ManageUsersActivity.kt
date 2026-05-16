@@ -28,7 +28,7 @@ class ManageUsersActivity : AppCompatActivity() {
 
         database = FirebaseDatabase.getInstance().getReference("users")
 
-        adapter = UserAdapter(userList) { user, newRole ->
+        adapter = UserAdapter(emptyList()) { user, newRole ->
             updateUserRole(user, newRole)
         }
         binding.rvUsers.layoutManager = LinearLayoutManager(this)
@@ -45,19 +45,24 @@ class ManageUsersActivity : AppCompatActivity() {
         if (!binding.swipeRefresh.isRefreshing) {
             binding.progressBar.visibility = View.VISIBLE
         }
-        database.addValueEventListener(object : ValueEventListener {
+        database.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (isFinishing) return
-                userList.clear()
+                
+                val newList = mutableListOf<User>()
                 for (userSnapshot in snapshot.children) {
                     val user = userSnapshot.getValue(User::class.java)
                     if (user != null) {
-                        userList.add(user)
+                        newList.add(user)
                     }
                 }
+                
+                userList.clear()
+                userList.addAll(newList)
+                
                 binding.progressBar.visibility = View.GONE
                 binding.swipeRefresh.isRefreshing = false
-                adapter.updateData(userList)
+                adapter.updateData(newList)
             }
 
             override fun onCancelled(error: DatabaseError) {

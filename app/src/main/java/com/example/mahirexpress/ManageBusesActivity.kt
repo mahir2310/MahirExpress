@@ -33,7 +33,7 @@ class ManageBusesActivity : AppCompatActivity() {
 
         database = FirebaseDatabase.getInstance().getReference("buses")
 
-        adapter = BusAdapter(busList) { bus ->
+        adapter = BusAdapter(emptyList()) { bus ->
             // Logic for clicking a bus item
         }
         binding.rvBuses.layoutManager = LinearLayoutManager(this)
@@ -84,18 +84,23 @@ class ManageBusesActivity : AppCompatActivity() {
 
     private fun fetchBuses() {
         binding.progressBar.visibility = View.VISIBLE
-        database.addValueEventListener(object : ValueEventListener {
+        database.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (isFinishing) return
-                busList.clear()
+                
+                val newList = mutableListOf<Bus>()
                 for (busSnapshot in snapshot.children) {
                     val bus = busSnapshot.getValue(Bus::class.java)
                     if (bus != null) {
-                        busList.add(bus)
+                        newList.add(bus)
                     }
                 }
+                
+                busList.clear()
+                busList.addAll(newList)
+                
                 binding.progressBar.visibility = View.GONE
-                adapter.updateData(busList)
+                adapter.updateData(newList)
             }
 
             override fun onCancelled(error: DatabaseError) {
