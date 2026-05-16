@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.mahirexpress.R
 import com.example.mahirexpress.RouteDetailActivity
 import com.example.mahirexpress.adapters.RouteAdapter
 import com.example.mahirexpress.databinding.FragmentHomeBinding
@@ -59,11 +58,7 @@ class HomeFragment : Fragment() {
         }
 
         binding.btnSearch.setOnClickListener {
-            performFilter()
-        }
-
-        binding.chipGroupFilter.setOnCheckedStateChangeListener { _, _ ->
-            performFilter()
+            performSearch()
         }
 
         binding.swipeRefresh.setOnRefreshListener {
@@ -89,11 +84,9 @@ class HomeFragment : Fragment() {
     }
 
     private fun fetchRoutes() {
-        if (!binding.swipeRefresh.isRefreshing) {
-            binding.progressBar.visibility = View.VISIBLE
-        }
+        binding.progressBar.visibility = View.VISIBLE
         
-        database.addValueEventListener(object : ValueEventListener {
+        database.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (_binding == null) return
                 routeList.clear()
@@ -105,7 +98,7 @@ class HomeFragment : Fragment() {
                 }
                 binding.progressBar.visibility = View.GONE
                 binding.swipeRefresh.isRefreshing = false
-                performFilter()
+                adapter.updateData(routeList)
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -116,23 +109,15 @@ class HomeFragment : Fragment() {
         })
     }
 
-    private fun performFilter() {
+    private fun performSearch() {
         val source = binding.etSource.text.toString().trim()
         val destination = binding.etDestination.text.toString().trim()
-        
-        val selectedChipId = binding.chipGroupFilter.checkedChipId
-        val categoryFilter = when (selectedChipId) {
-            R.id.chipAC -> "AC"
-            R.id.chipNonAC -> "Non-AC"
-            else -> "All"
-        }
 
         val filteredList = routeList.filter { route ->
             val matchSource = source.isEmpty() || route.source.contains(source, ignoreCase = true)
             val matchDest = destination.isEmpty() || route.destination.contains(destination, ignoreCase = true)
-            val matchCategory = categoryFilter == "All" || route.busId.contains(categoryFilter, ignoreCase = true)
             
-            matchSource && matchDest && matchCategory
+            matchSource && matchDest
         }
 
         adapter.updateData(filteredList)

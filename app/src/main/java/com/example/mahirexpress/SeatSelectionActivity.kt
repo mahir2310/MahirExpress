@@ -37,6 +37,7 @@ class SeatSelectionActivity : AppCompatActivity() {
         setSupportActionBar(binding.toolbar)
         binding.toolbar.setNavigationOnClickListener { finish() }
 
+        // Corrected database reference to point to "seats" node under the specific routeId
         database = FirebaseDatabase.getInstance().getReference("seats").child(routeId ?: "default")
 
         fetchBookedSeats()
@@ -59,11 +60,13 @@ class SeatSelectionActivity : AppCompatActivity() {
     }
 
     private fun fetchBookedSeats() {
-        database.addValueEventListener(object : ValueEventListener {
+        // Changed to addListenerForSingleValueEvent to ensure immediate loading
+        database.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 bookedSeats.clear()
                 for (seatSnapshot in snapshot.children) {
-                    if (seatSnapshot.child("status").value == "booked") {
+                    val status = seatSnapshot.child("status").getValue(String::class.java)
+                    if (status == "booked") {
                         bookedSeats.add(seatSnapshot.key ?: "")
                     }
                 }
@@ -71,6 +74,8 @@ class SeatSelectionActivity : AppCompatActivity() {
             }
 
             override fun onCancelled(error: DatabaseError) {
+                // If the path doesn't exist yet, we still want to show the empty grid
+                setupSeatGrid()
                 Toast.makeText(this@SeatSelectionActivity, "Error: ${error.message}", Toast.LENGTH_SHORT).show()
             }
         })
