@@ -1,3 +1,30 @@
 <resources>
     <string name="app_name">MahirExpress</string>
+    <string name="login">Login</string>
+    <string name="register">Register</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="full_name">Full Name</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="forgot_password">Forgot Password?</string>
+    <string name="dont_have_account">Don\'t have an account? </string>
+    <string name="already_have_account">Already have an account? Login</string>
+    <string name="select_role">Select Role:</string>
+    <string name="customer">Customer</string>
+    <string name="manager">Manager</string>
+    <string name="admin">Admin</string>
+    <string name="search_buses">Search Buses</string>
+    <string name="from_source">From (Source)</string>
+    <string name="to_destination">To (Destination)</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="logout">Logout</string>
+    <string name="save_changes">Save Changes</string>
+    <string name="admin_dashboard">Admin Dashboard</string>
+    <string name="add_route">Add New Route</string>
+    <string name="manage_buses">Manage Buses</string>
+    <string name="confirm_and_pay">Confirm and Pay</string>
+    <string name="booking_summary">Booking Summary</string>
+    <string name="passenger_details">Passenger Details</string>
+    <string name="proceed_to_summary">Proceed to Summary</string>
+    <string name="select_seats">Select Seats</string>
 </resources>
