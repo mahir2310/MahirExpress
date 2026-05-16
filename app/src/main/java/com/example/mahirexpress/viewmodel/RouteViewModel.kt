@@ -1,9 +1,7 @@
 package com.example.mahirexpress.viewmodel
 
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.mahirexpress.model.Route
 import com.google.firebase.database.DataSnapshot
@@ -14,12 +12,20 @@ import com.google.firebase.database.ValueEventListener
 class RouteViewModel : ViewModel() {
     private val database = FirebaseDatabase.getInstance().getReference("routes")
     
-    val routes = mutableStateListOf<Route>()
-    val allSources = mutableStateListOf<String>()
-    val allDestinations = mutableStateListOf<String>()
+    private val _routes = MutableLiveData<List<Route>>(emptyList())
+    val routes: LiveData<List<Route>> = _routes
+
+    private val _allSources = MutableLiveData<List<String>>(emptyList())
+    val allSources: LiveData<List<String>> = _allSources
+
+    private val _allDestinations = MutableLiveData<List<String>>(emptyList())
+    val allDestinations: LiveData<List<String>> = _allDestinations
     
-    var isLoading by mutableStateOf(false)
-    var errorMessage by mutableStateOf<String?>(null)
+    private val _isLoading = MutableLiveData<Boolean>(false)
+    val isLoading: LiveData<Boolean> = _isLoading
+
+    private val _errorMessage = MutableLiveData<String?>(null)
+    val errorMessage: LiveData<String?> = _errorMessage
 
     init {
         fetchLocations()
@@ -37,41 +43,39 @@ class RouteViewModel : ViewModel() {
                         destinations.add(it.destination)
                     }
                 }
-                allSources.clear()
-                allSources.addAll(sources.sorted())
-                allDestinations.clear()
-                allDestinations.addAll(destinations.sorted())
+                _allSources.value = sources.sorted()
+                _allDestinations.value = destinations.sorted()
             }
             override fun onCancelled(error: DatabaseError) {}
         })
     }
 
     fun searchRoutes(source: String, destination: String, date: String) {
-        isLoading = true
-        errorMessage = null
-        routes.clear()
+        _isLoading.value = true
+        _errorMessage.value = null
 
         database.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                routes.clear()
+                val routesList = mutableListOf<Route>()
                 for (child in snapshot.children) {
                     val route = child.getValue(Route::class.java)
                     if (route != null && 
                         route.source.equals(source, ignoreCase = true) && 
                         route.destination.equals(destination, ignoreCase = true) &&
                         route.date == date) {
-                        routes.add(route)
+                        routesList.add(route)
                     }
                 }
-                isLoading = false
-                if (routes.isEmpty()) {
-                    errorMessage = "No buses found for this route on $date."
+                _routes.value = routesList
+                _isLoading.value = false
+                if (routesList.isEmpty()) {
+                    _errorMessage.value = "No buses found for this route on $date."
                 }
             }
 
             override fun onCancelled(error: DatabaseError) {
-                isLoading = false
-                errorMessage = error.message
+                _isLoading.value = false
+                _errorMessage.value = error.message
             }
         })
     }

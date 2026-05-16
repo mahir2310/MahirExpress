@@ -1,9 +1,7 @@
 package com.example.mahirexpress.viewmodel
 
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.mahirexpress.model.Booking
 import com.google.firebase.database.DataSnapshot
@@ -14,33 +12,41 @@ import com.google.firebase.database.ValueEventListener
 class AdminViewModel : ViewModel() {
     private val database = FirebaseDatabase.getInstance().getReference("bookings")
     
-    val allBookings = mutableStateListOf<Booking>()
-    var totalRevenue by mutableStateOf(0.0)
-    var isLoading by mutableStateOf(false)
-    var errorMessage by mutableStateOf<String?>(null)
+    private val _allBookings = MutableLiveData<List<Booking>>(emptyList())
+    val allBookings: LiveData<List<Booking>> = _allBookings
+
+    private val _totalRevenue = MutableLiveData<Double>(0.0)
+    val totalRevenue: LiveData<Double> = _totalRevenue
+
+    private val _isLoading = MutableLiveData<Boolean>(false)
+    val isLoading: LiveData<Boolean> = _isLoading
+
+    private val _errorMessage = MutableLiveData<String?>(null)
+    val errorMessage: LiveData<String?> = _errorMessage
 
     fun fetchAllBookings() {
-        isLoading = true
-        errorMessage = null
+        _isLoading.value = true
+        _errorMessage.value = null
 
         database.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                allBookings.clear()
+                val bookingsList = mutableListOf<Booking>()
                 var revenue = 0.0
                 for (child in snapshot.children) {
                     val booking = child.getValue(Booking::class.java)
                     if (booking != null) {
-                        allBookings.add(booking)
+                        bookingsList.add(booking)
                         revenue += booking.totalAmount
                     }
                 }
-                totalRevenue = revenue
-                isLoading = false
+                _allBookings.value = bookingsList
+                _totalRevenue.value = revenue
+                _isLoading.value = false
             }
 
             override fun onCancelled(error: DatabaseError) {
-                isLoading = false
-                errorMessage = error.message
+                _isLoading.value = false
+                _errorMessage.value = error.message
             }
         })
     }

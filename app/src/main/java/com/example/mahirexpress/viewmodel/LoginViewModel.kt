@@ -1,8 +1,7 @@
 package com.example.mahirexpress.viewmodel
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.mahirexpress.model.User
 import com.example.mahirexpress.util.PreferenceManager
@@ -10,23 +9,27 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 
 class LoginViewModel : ViewModel() {
-    var email by mutableStateOf("")
-    var password by mutableStateOf("")
-    var isLoading by mutableStateOf(false)
-    var errorMessage by mutableStateOf<String?>(null)
-    var isSuccess by mutableStateOf(false)
+    
+    private val _isLoading = MutableLiveData<Boolean>(false)
+    val isLoading: LiveData<Boolean> = _isLoading
+
+    private val _errorMessage = MutableLiveData<String?>(null)
+    val errorMessage: LiveData<String?> = _errorMessage
+
+    private val _isSuccess = MutableLiveData<Boolean>(false)
+    val isSuccess: LiveData<Boolean> = _isSuccess
 
     private val auth = FirebaseAuth.getInstance()
     private val database = FirebaseDatabase.getInstance().getReference("users")
 
-    fun loginUser(preferenceManager: PreferenceManager) {
+    fun loginUser(email: String, password: String, preferenceManager: PreferenceManager) {
         if (email.isBlank() || password.isBlank()) {
-            errorMessage = "Please enter email and password"
+            _errorMessage.value = "Please enter email and password"
             return
         }
 
-        isLoading = true
-        errorMessage = null
+        _isLoading.value = true
+        _errorMessage.value = null
 
         auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
@@ -43,16 +46,18 @@ class LoginViewModel : ViewModel() {
                                 email = user.email,
                                 role = user.role
                             )
-                            isSuccess = true
+                            _isSuccess.value = true
+                        } else {
+                             _errorMessage.value = "User data not found"
                         }
-                        isLoading = false
+                        _isLoading.value = false
                     }.addOnFailureListener {
-                        errorMessage = "Failed to fetch user profile"
-                        isLoading = false
+                        _errorMessage.value = "Failed to fetch user profile"
+                        _isLoading.value = false
                     }
                 } else {
-                    isLoading = false
-                    errorMessage = task.exception?.message
+                    _isLoading.value = false
+                    _errorMessage.value = task.exception?.message
                 }
             }
     }

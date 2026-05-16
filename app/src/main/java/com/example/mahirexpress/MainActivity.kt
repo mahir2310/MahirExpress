@@ -1,20 +1,15 @@
 package com.example.mahirexpress
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import com.example.mahirexpress.ui.navigation.MahirNavGraph
-import com.example.mahirexpress.ui.theme.MahirExpressTheme
+import androidx.appcompat.app.AppCompatActivity
+import com.example.mahirexpress.databinding.ActivityMainBinding
 
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityMainBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            MahirExpressTheme {
-                MahirNavGraph()
-            }
-        }
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
     }
 }

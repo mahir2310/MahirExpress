@@ -1,17 +1,22 @@
 package com.example.mahirexpress.viewmodel
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.mahirexpress.model.Booking
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 
 class BookingViewModel : ViewModel() {
-    var isLoading by mutableStateOf(false)
-    var isSuccess by mutableStateOf(false)
-    var errorMessage by mutableStateOf<String?>(null)
+    
+    private val _isLoading = MutableLiveData<Boolean>(false)
+    val isLoading: LiveData<Boolean> = _isLoading
+
+    private val _isSuccess = MutableLiveData<Boolean>(false)
+    val isSuccess: LiveData<Boolean> = _isSuccess
+
+    private val _errorMessage = MutableLiveData<String?>(null)
+    val errorMessage: LiveData<String?> = _errorMessage
 
     private val database = FirebaseDatabase.getInstance()
     private val auth = FirebaseAuth.getInstance()
@@ -26,8 +31,8 @@ class BookingViewModel : ViewModel() {
         totalAmount: Double,
         journeyDate: String
     ) {
-        isLoading = true
-        errorMessage = null
+        _isLoading.value = true
+        _errorMessage.value = null
         
         val bookingRef = database.getReference("bookings")
         val bookingId = bookingRef.push().key ?: return
@@ -49,12 +54,11 @@ class BookingViewModel : ViewModel() {
         bookingRef.child(bookingId).setValue(booking)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    // For a real app, we'd also decrement availableSeats in the 'routes' node here.
-                    isSuccess = true
+                    _isSuccess.value = true
                 } else {
-                    errorMessage = task.exception?.message
+                    _errorMessage.value = task.exception?.message
                 }
-                isLoading = false
+                _isLoading.value = false
             }
     }
 }
