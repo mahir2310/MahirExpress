@@ -22,5 +22,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "MahirBusExress"
+rootProject.name = "MahirExpress"
 include(":app")

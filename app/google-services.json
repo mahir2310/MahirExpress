@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "760813877925",
+    "firebase_url": "https://mahirexpress-4c145-default-rtdb.firebaseio.com",
+    "project_id": "mahirexpress-4c145",
+    "storage_bucket": "mahirexpress-4c145.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:760813877925:android:5688de543af9eebb0beb4c",
+        "android_client_info": {
+          "package_name": "com.example.mahirexpress"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "760813877925-bg3ae9gtjla2v9knp6v1u662glhmalva.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.mahirexpress",
+            "certificate_hash": "5152983a4a8262312702dc79a6f247b26e7b04f6"
+          }
+        },
+        {
+          "client_id": "760813877925-idm00la9b2j3jfmqac6aqvv78ev193iv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCNUPsO_uyLpYsfMhvOGAK9mOIA9UfYGpE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "760813877925-idm00la9b2j3jfmqac6aqvv78ev193iv.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
