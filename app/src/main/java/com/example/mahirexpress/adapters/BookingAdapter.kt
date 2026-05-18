@@ -1,6 +1,7 @@
 package com.example.mahirexpress.adapters
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -9,7 +10,8 @@ import com.example.mahirexpress.models.Booking
 
 class BookingAdapter(
     private var bookings: List<Booking>,
-    private val onBookingClick: (Booking) -> Unit
+    private val onBookingClick: (Booking) -> Unit,
+    private val onCancelClick: (Booking) -> Unit
 ) : RecyclerView.Adapter<BookingAdapter.BookingViewHolder>() {
 
     inner class BookingViewHolder(val binding: ItemBookingBinding) : RecyclerView.ViewHolder(binding.root)
@@ -28,6 +30,14 @@ class BookingAdapter(
         binding.tvSeatsInfo.text = "Seats: ${booking.seats.joinToString(", ")}"
         binding.tvStatus.text = booking.status.replaceFirstChar { it.uppercase() }
         binding.tvAmount.text = "৳${booking.totalAmount}"
+        
+        // Show cancel button only if status is "confirmed"
+        if (booking.status == "confirmed") {
+            binding.btnCancel.visibility = View.VISIBLE
+            binding.btnCancel.setOnClickListener { onCancelClick(booking) }
+        } else {
+            binding.btnCancel.visibility = View.GONE
+        }
         
         binding.root.setOnClickListener { onBookingClick(booking) }
     }

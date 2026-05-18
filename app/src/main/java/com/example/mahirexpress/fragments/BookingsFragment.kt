@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.mahirexpress.TicketActivity
@@ -36,23 +38,51 @@ class BookingsFragment : Fragment() {
         auth = FirebaseAuth.getInstance()
         database = FirebaseDatabase.getInstance().getReference("bookings")
 
-        // Initialize with empty list
-        adapter = BookingAdapter(emptyList()) { booking ->
-            val intent = Intent(requireContext(), TicketActivity::class.java).apply {
-                putExtra("route", "${booking.source} to ${booking.destination}")
-                putExtra("date", booking.journeyDate)
-                putExtra("seats", booking.seats.joinToString(", "))
-                putExtra("bus", booking.busName)
-                putExtra("amount", "৳${booking.totalAmount}")
-                putExtra("bookingId", booking.bookingId)
+        adapter = BookingAdapter(
+            emptyList(),
+            onBookingClick = { booking ->
+                val intent = Intent(requireContext(), TicketActivity::class.java).apply {
+                    putExtra("route", "${booking.source} to ${booking.destination}")
+                    putExtra("date", booking.journeyDate)
+                    putExtra("seats", booking.seats.joinToString(", "))
+                    putExtra("bus", booking.busName)
+                    putExtra("amount", "৳${booking.totalAmount}")
+                    putExtra("bookingId", booking.bookingId)
+                }
+                startActivity(intent)
+            },
+            onCancelClick = { booking ->
+                showCancelConfirmation(booking)
             }
-            startActivity(intent)
-        }
+        )
 
         binding.rvBookings.layoutManager = LinearLayoutManager(requireContext())
         binding.rvBookings.adapter = adapter
         
         fetchBookings()
+    }
+
+    private fun showCancelConfirmation(booking: Booking) {
+        AlertDialog.Builder(requireContext())
+            .setTitle("Cancel Booking")
+            .setMessage("Are you sure you want to cancel this booking?")
+            .setPositiveButton("Yes") { _, _ ->
+                cancelBooking(booking)
+            }
+            .setNegativeButton("No", null)
+            .show()
+    }
+
+    private fun cancelBooking(booking: Booking) {
+        FirebaseDatabase.getInstance().getReference("bookings")
+            .child(booking.bookingId).child("status").setValue("cancelled")
+            .addOnSuccessListener {
+                Toast.makeText(context, "Booking cancelled", Toast.LENGTH_SHORT).show()
+                fetchBookings()
+            }
+            .addOnFailureListener {
+                Toast.makeText(context, "Failed to cancel", Toast.LENGTH_SHORT).show()
+            }
     }
 
     private fun fetchBookings() {

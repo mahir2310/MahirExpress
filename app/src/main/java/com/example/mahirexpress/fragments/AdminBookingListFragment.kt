@@ -49,17 +49,21 @@ class AdminBookingListFragment : Fragment() {
 
         database = FirebaseDatabase.getInstance().getReference("bookings")
 
-        adapter = BookingAdapter(emptyList()) { booking ->
-            val intent = Intent(requireContext(), TicketActivity::class.java).apply {
-                putExtra("route", "${booking.source} to ${booking.destination}")
-                putExtra("date", booking.journeyDate)
-                putExtra("seats", booking.seats.joinToString(", "))
-                putExtra("bus", booking.busName)
-                putExtra("amount", "৳${booking.totalAmount}")
-                putExtra("bookingId", booking.bookingId)
-            }
-            startActivity(intent)
-        }
+        adapter = BookingAdapter(
+            emptyList(),
+            onBookingClick = { booking ->
+                val intent = Intent(requireContext(), TicketActivity::class.java).apply {
+                    putExtra("route", "${booking.source} to ${booking.destination}")
+                    putExtra("date", booking.journeyDate)
+                    putExtra("seats", booking.seats.joinToString(", "))
+                    putExtra("bus", booking.busName)
+                    putExtra("amount", "৳${booking.totalAmount}")
+                    putExtra("bookingId", booking.bookingId)
+                }
+                startActivity(intent)
+            },
+            onCancelClick = { /* No-op for admin in this fragment, or handle as needed */ }
+        )
         
         binding.rvBookings.layoutManager = LinearLayoutManager(requireContext())
         binding.rvBookings.adapter = adapter
