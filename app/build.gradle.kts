@@ -59,11 +59,6 @@ dependencies {
     
     // Glide
     implementation(libs.glide)
-    implementation(libs.firebase.auth)
-    implementation(libs.androidx.credentials)
-    implementation(libs.androidx.credentials.play.services.auth)
-    implementation(libs.googleid)
-    implementation(libs.firebase.database)
     annotationProcessor(libs.glide.compiler)
 
     testImplementation(libs.junit)
